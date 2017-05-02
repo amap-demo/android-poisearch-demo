@@ -1,15 +1,15 @@
 package com.amap.poisearch.util;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 
 import android.content.Context;
-import android.util.Log;
+import android.text.TextUtils;
+import com.amap.api.maps.offlinemap.OfflineMapCity;
+import com.amap.api.maps.offlinemap.OfflineMapManager;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 /**
  * Created by liangchao_suxun on 2017/4/27.
@@ -17,7 +17,7 @@ import com.google.gson.reflect.TypeToken;
 
 public class CityUtil {
 
-    private static final String DEF_CITY_KEY ="def_city_key";
+    private static final String DEF_CITY_KEY = "def_city_key";
 
     /**
      * 返回默认的城市.如果SharedPreference返回为空，则取北京市
@@ -28,7 +28,7 @@ public class CityUtil {
         }
 
         String defCityStr = PreferenceUtil.getStr(context, DEF_CITY_KEY);
-        CityModel res= null;
+        CityModel res = null;
         try {
             res = new Gson().fromJson(defCityStr, CityModel.class);
         } catch (Exception e) {
@@ -55,24 +55,71 @@ public class CityUtil {
         return null;
     }
 
-    private static final String AMAP_CITY_FILENAME = "amap_cities.json";
     public static ArrayList<CityModel> getCityList(Context context) {
-        String cityListStr = getFromAssets(context, AMAP_CITY_FILENAME);
-        ArrayList<CityModel> cities;
-        cities = new Gson().fromJson(cityListStr, new TypeToken<ArrayList<CityModel>>() {}.getType());
-        return cities;
+        return getCityList(context, null);
     }
 
+    public static ArrayList<CityModel> getCityList(Context context, String filterStr) {
+        ArrayList<CityModel> cities;
+        cities = getCitiesFromOfflineCities(context);
+
+        ArrayList<CityModel> res = new ArrayList<>();
+        for (CityModel item : cities) {
+            if (TextUtils.isEmpty(filterStr) || item.getPinyin().contains(filterStr) || item.getCity().contains(filterStr)) {
+                res.add(item);
+            }
+        }
+
+        return res;
+    }
+
+    private static volatile HashSet<String> mHotCities = new HashSet<>();
+
+    public static void setHotCities(HashSet<String> hotCities) {
+        if (hotCities == null || hotCities.size() == 0) {
+            mHotCities.add("北京市");
+            mHotCities.add("广州市");
+            mHotCities.add("成都市");
+            mHotCities.add("上海市");
+            mHotCities.add("杭州市");
+            mHotCities.add("武汉市");
+            return;
+        }
+
+        mHotCities.clear();
+        mHotCities.addAll(hotCities);
+    }
+
+    public static char HOT_CITY_CHAR = '#';
+
     public static ArrayList<CityModel> getGroupCityList(Context context) {
+        return getGroupCityList(context, null);
+    }
+
+    public static ArrayList<CityModel> getGroupCityList(Context context, String filterStr) {
+
         ArrayList<CityModel> res = new ArrayList<CityModel>();
 
-        ArrayList<CityModel> oriCityList = getCityList(context);
+        ArrayList<CityModel> oriCityList = getCityList(context, filterStr);
         Collections.sort(oriCityList, new Comparator<CityModel>() {
             @Override
             public int compare(CityModel o1, CityModel o2) {
                 return o1.getPinyin().compareTo(o2.getPinyin());
             }
         });
+
+        // 先录入热门城市
+        if (mHotCities != null && mHotCities.size() > 0) {
+            for (CityModel item : oriCityList) {
+                if (mHotCities.contains(item.getCity())) {
+                    if (res.size() == 0) {
+                        res.add(CityModel.createGroupModel(HOT_CITY_CHAR));
+                    }
+                    res.add(item);
+                    continue;
+                }
+            }
+        }
 
         char currChar = ' ';
         for (CityModel item : oriCityList) {
@@ -94,19 +141,15 @@ public class CityUtil {
         return res;
     }
 
-    private static String getFromAssets(Context context, String fileName) {
-        try {
-            InputStreamReader inputReader = new InputStreamReader(context.getResources().getAssets().open(fileName));
-            BufferedReader bufReader = new BufferedReader(inputReader);
-            String line = "";
-            String Result = "";
-            while ((line = bufReader.readLine()) != null) { Result += line; }
-            return Result;
-        } catch (Exception e) {
-            e.printStackTrace();
+    private static ArrayList<CityModel> getCitiesFromOfflineCities(Context context) {
+        ArrayList<CityModel> res = new ArrayList<>();
+        OfflineMapManager mapManager = new OfflineMapManager(context, null);
+        ArrayList<OfflineMapCity> cities = mapManager.getOfflineMapCityList();
+
+        for (OfflineMapCity offlineMapCity : cities) {
+            res.add(new CityModel(offlineMapCity));
         }
 
-        return "";
+        return res;
     }
-
 }

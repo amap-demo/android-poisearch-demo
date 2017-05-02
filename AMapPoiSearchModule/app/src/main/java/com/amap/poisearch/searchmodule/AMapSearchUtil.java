@@ -14,12 +14,12 @@ import com.amap.api.services.poisearch.PoiSearch.OnPoiSearchListener;
 
 public class AMapSearchUtil {
 
-    public static void doPoiSearch(Context context, String searchId, String keyWord, String category, String cityCode,
+    public static void doPoiSearch(Context context, String searchId, String keyWord, String category, String adCode,
                                    int page,
                                    int pageSize,
                                    OnPoiSearchListener onPoiSearchListener) {
 
-        PoiSearch.Query query = new PoiSearch.Query(keyWord, category, cityCode);
+        PoiSearch.Query query = new PoiSearch.Query(keyWord, category, adCode);
         query.setPageSize(pageSize);
         query.setPageNum(page);
         PoiSearch poiSearch = new PoiSearch(context, query);

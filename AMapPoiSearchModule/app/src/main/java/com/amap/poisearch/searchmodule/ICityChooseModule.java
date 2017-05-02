@@ -32,11 +32,17 @@ public interface ICityChooseModule {
 
         public void onChooseCity(CityModel city);
 
+        public void onCityInput(String cityInput);
+
+        public void onCancel();
+
         public void loadCityList(ArrayList<CityModel> data);
     }
 
     public static interface IParentDelegate {
         public void onChooseCity(CityModel city);
+
+        public void onCancel();
     }
 
 }

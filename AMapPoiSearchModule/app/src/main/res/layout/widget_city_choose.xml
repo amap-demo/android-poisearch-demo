@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <com.amap.poisearch.searchmodule.CityInputWidget
+        android:id="@+id/city_input_widget"
+        android:layout_alignParentTop="true"
+        android:layout_width="fill_parent"
+        android:layout_height="45dp">
+        >
+
+    </com.amap.poisearch.searchmodule.CityInputWidget>
 
     <com.amap.poisearch.searchmodule.CurrCityWidget
         android:id="@+id/curr_city_widget"
-        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/padding"
+        android:layout_below="@id/city_input_widget"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
     </com.amap.poisearch.searchmodule.CurrCityWidget>

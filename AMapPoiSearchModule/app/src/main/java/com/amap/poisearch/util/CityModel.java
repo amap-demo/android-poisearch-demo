@@ -1,5 +1,7 @@
 package com.amap.poisearch.util;
 
+import com.amap.api.maps.offlinemap.OfflineMapCity;
+
 /**
  * Created by liangchao_suxun on 2017/4/27.
  */
@@ -10,6 +12,22 @@ public class CityModel {
     private String code;
     private String jianpin;
     private String pinyin;
+
+    public CityModel() {
+        ;
+    }
+
+    public CityModel(OfflineMapCity mapCity) {
+        if (mapCity == null) {
+            return;
+        }
+        this.adcode = mapCity.getAdcode();
+        this.city = mapCity.getCity();
+        this.code = mapCity.getCode();
+        this.jianpin = mapCity.getJianpin();
+        this.pinyin = mapCity.getPinyin();
+        this.type = 0;
+    }
 
     public static CityModel createGroupModel(char groupChar) {
         CityModel res = new CityModel();

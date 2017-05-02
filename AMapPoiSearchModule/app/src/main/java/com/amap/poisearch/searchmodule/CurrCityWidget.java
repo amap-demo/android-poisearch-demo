@@ -1,6 +1,7 @@
 package com.amap.poisearch.searchmodule;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -33,6 +34,9 @@ public class CurrCityWidget extends LinearLayout {
     private void init() {
         LayoutInflater.from(getContext()).inflate(R.layout.widget_current_city, this);
         setBackgroundColor(getContext().getResources().getColor(R.color.common_bg));
+
+        int padding = (int)getContext().getResources().getDimension(R.dimen.padding);
+        setPadding(padding, 0, padding, 0);
 
         mCurrCityTV = (TextView)findViewById(R.id.curr_city_tv);
         mCurrCityTV.setText("");

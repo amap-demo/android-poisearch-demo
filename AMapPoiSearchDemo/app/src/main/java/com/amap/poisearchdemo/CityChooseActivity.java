@@ -36,9 +36,6 @@ public class CityChooseActivity extends AppCompatActivity {
         mCityChooseDelegate = new CityChooseDelegate();
         mCityChooseDelegate.bindParentDelegate(mCityChooseParentDelegate);
         contentView.addView(mCityChooseDelegate.getWidget(this));
-
-        ArrayList<CityModel> groupedCityList = CityUtil.getGroupCityList(this);
-        mCityChooseDelegate.loadCityList(groupedCityList);
     }
 
     public static final String CURR_CITY_KEY = "curr_city_key";
@@ -59,6 +56,11 @@ public class CityChooseActivity extends AppCompatActivity {
             String cityStr = new Gson().toJson(city);
             intent.putExtra(CURR_CITY_KEY, cityStr);
             CityChooseActivity.this.setResult(RESULT_OK, intent);
+            CityChooseActivity.this.finish();
+        }
+
+        @Override
+        public void onCancel() {
             CityChooseActivity.this.finish();
         }
     };

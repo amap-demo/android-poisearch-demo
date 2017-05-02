@@ -3,10 +3,12 @@ package com.amap.poisearch.searchmodule;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import com.amap.poisearch.searchmodule.ICityChooseModule.IParentDelegate;
 import com.amap.poisearch.searchmodule.ICityChooseModule.IWidget;
 import com.amap.poisearch.util.CityModel;
+import com.amap.poisearch.util.CityUtil;
 
 /**
  * Created by liangchao_suxun on 2017/4/28.
@@ -15,6 +17,7 @@ import com.amap.poisearch.util.CityModel;
 public class CityChooseDelegate implements ICityChooseModule.IDelegate {
 
     IParentDelegate mIParentDelegate;
+
     @Override
     public void bindParentDelegate(IParentDelegate delegate) {
         this.mIParentDelegate = delegate;
@@ -29,6 +32,19 @@ public class CityChooseDelegate implements ICityChooseModule.IDelegate {
     public void onChooseCity(CityModel city) {
         if (mIParentDelegate != null) {
             mIParentDelegate.onChooseCity(city);
+        }
+    }
+
+    @Override
+    public void onCityInput(String cityInput) {
+        ArrayList<CityModel> groupedCityList = CityUtil.getGroupCityList(mContext, cityInput);
+        loadCityList(groupedCityList);
+    }
+
+    @Override
+    public void onCancel() {
+        if (mIParentDelegate != null) {
+            mIParentDelegate.onCancel();
         }
     }
 
@@ -53,6 +69,10 @@ public class CityChooseDelegate implements ICityChooseModule.IDelegate {
 
         mWidget = new CityChooseWidget(context);
         mWidget.bindDelegate(this);
+        CityUtil.setHotCities(null);
+
+        ArrayList<CityModel> groupedCityList = CityUtil.getGroupCityList(context);
+        loadCityList(groupedCityList);
 
         return (View)mWidget;
     }

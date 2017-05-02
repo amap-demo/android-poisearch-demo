@@ -1,0 +1,2 @@
+AMapPoiSearchDemo: 介绍如何使用POI检索Module的demo
+AMapPoiSearchModule: 提供Poi检索UI的module

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.poisearch.PoiResult;
@@ -28,8 +30,7 @@ public class SearchModuleDelegate implements IDelegate {
      */
     private CityModel mCurrCity;
 
-    private int pageSize = 30;
-    private int currPage = 0;
+    private int pageSize = 10;
     private Context mContext;
     private String mCategory = "";
 
@@ -80,9 +81,7 @@ public class SearchModuleDelegate implements IDelegate {
             mWidget.setFavCompAddress(mFavCompPoi.getTitle());
         }
 
-
-        //设置默认显示的poiItem数据。此处可个性化定制
-        onSearch("北京南站");
+        reload(null, true);
     }
 
     public CityModel getCurrCity() {
@@ -125,18 +124,23 @@ public class SearchModuleDelegate implements IDelegate {
     }
 
     private static final int POI_HIS_SIZE = 5;
-    private void reload(ArrayList<PoiItem> items) {
-        //加载时，连同历史数据和检索回来的数据一起加载
-        ArrayList<PoiItem> hisItems = PoiItemDBHelper.getInstance().getLatestPois(mContext, POI_HIS_SIZE);
 
+    private void reload(ArrayList<PoiItem> items , boolean hasHistory) {
         ArrayList<PoiListItemData> poiItems = new ArrayList<>();
 
-        for (PoiItem hisItem : hisItems) {
-            poiItems.add(new PoiListItemData(PoiListItemData.HIS_DATA, hisItem));
+        if (hasHistory) {
+            ArrayList<PoiItem> hisItems = PoiItemDBHelper.getInstance().getLatestPois(mContext, POI_HIS_SIZE);
+            if (hisItems != null) {
+                for (PoiItem hisItem : hisItems) {
+                    poiItems.add(new PoiListItemData(PoiListItemData.HIS_DATA, hisItem));
+                }
+            }
         }
 
-        for (PoiItem searchItem : items) {
-            poiItems.add(new PoiListItemData(PoiListItemData.SEARCH_DATA, searchItem));
+        if (items != null) {
+            for (PoiItem searchItem : items) {
+                poiItems.add(new PoiListItemData(PoiListItemData.SEARCH_DATA, searchItem));
+            }
         }
 
         mWidget.reloadPoiList(poiItems);
@@ -149,20 +153,24 @@ public class SearchModuleDelegate implements IDelegate {
 
     @Override
     public void onSearch(String inputStr) {
-
         if (isSearching.get()) {
             return;
         }
 
-        this.currPage = 0;
+        if (TextUtils.isEmpty(inputStr)) {
+            reload(null, true);
+            isSearching.set(false);
+            return;
+        }
+
         isSearching.set(true);
 
         AMapSearchUtil.doPoiSearch(mContext, "" + java.lang.System.currentTimeMillis(), inputStr, mCategory,
-            mCurrCity.getCode(), this.currPage, this.pageSize, new OnPoiSearchListener() {
+            mCurrCity.getAdcode(), 0, this.pageSize, new OnPoiSearchListener() {
                 @Override
                 public void onPoiSearched(PoiResult poiResult, int i) {
                     ArrayList<PoiItem> items = poiResult.getPois();
-                    reload(items);
+                    reload(items, false);
 
                     isSearching.set(false);
                 }
@@ -172,6 +180,7 @@ public class SearchModuleDelegate implements IDelegate {
                     isSearching.set(false);
                 }
             });
+
     }
 
     @Override
