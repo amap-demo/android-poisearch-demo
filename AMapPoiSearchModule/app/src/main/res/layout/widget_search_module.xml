@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <com.amap.poisearch.searchmodule.PoiSearchWidget
+        android:id="@+id/poi_search_widget"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_alignParentTop="true"
+        android:paddingLeft="@dimen/padding"
+        android:paddingRight="@dimen/padding"
+        android:background="#fff"
+        />
+
+    <com.amap.poisearch.searchmodule.PoiListWidget
+        android:id="@+id/poi_list_widget"
+        android:layout_below="@id/poi_search_widget"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="@dimen/padding"
+        android:paddingLeft="@dimen/padding"
+        android:paddingRight="@dimen/padding"
+        />
+</merge>
