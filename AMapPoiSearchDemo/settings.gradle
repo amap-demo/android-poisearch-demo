@@ -1,0 +1,4 @@
+include ':app'
+
+include ':AmapPoiSearchModule'
+project(":AmapPoiSearchModule").projectDir=new File("../AMapPoiSearchModule")
