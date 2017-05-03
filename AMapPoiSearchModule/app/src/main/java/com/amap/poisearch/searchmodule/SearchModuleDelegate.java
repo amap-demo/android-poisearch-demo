@@ -32,7 +32,8 @@ public class SearchModuleDelegate implements IDelegate {
 
     private int pageSize = 10;
     private Context mContext;
-    private String mCategory = "";
+
+    private String mCategory = "0601|0604|0704|0801|0806|0901|0902|090400|1001|1101|110202|1202|120301|120302|1301|1401|140200|140300|141201|141202|141203|150104|1502|1505|150600|1507|1901|1902|1903|190500";
 
     private PoiItem mFavHomePoi;
     private PoiItem mFavCompPoi;
