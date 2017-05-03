@@ -65,7 +65,8 @@ public class CityUtil {
 
         ArrayList<CityModel> res = new ArrayList<>();
         for (CityModel item : cities) {
-            if (TextUtils.isEmpty(filterStr) || item.getPinyin().contains(filterStr) || item.getCity().contains(filterStr)) {
+            if (TextUtils.isEmpty(filterStr) || item.getPinyin().contains(filterStr) || item.getCity().contains(
+                filterStr)) {
                 res.add(item);
             }
         }
@@ -97,7 +98,6 @@ public class CityUtil {
     }
 
     public static ArrayList<CityModel> getGroupCityList(Context context, String filterStr) {
-
         ArrayList<CityModel> res = new ArrayList<CityModel>();
 
         ArrayList<CityModel> oriCityList = getCityList(context, filterStr);
@@ -141,7 +141,14 @@ public class CityUtil {
         return res;
     }
 
+    private static ArrayList<CityModel> offlieCityCache = new ArrayList<>();
+
     private static ArrayList<CityModel> getCitiesFromOfflineCities(Context context) {
+
+        if (offlieCityCache != null && offlieCityCache.size() > 0) {
+            return offlieCityCache;
+        }
+
         ArrayList<CityModel> res = new ArrayList<>();
         OfflineMapManager mapManager = new OfflineMapManager(context, null);
         ArrayList<OfflineMapCity> cities = mapManager.getOfflineMapCityList();
@@ -149,6 +156,8 @@ public class CityUtil {
         for (OfflineMapCity offlineMapCity : cities) {
             res.add(new CityModel(offlineMapCity));
         }
+
+        offlieCityCache = res;
 
         return res;
     }
