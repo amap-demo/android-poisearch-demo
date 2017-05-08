@@ -1,8 +1,9 @@
- package com.amap.poisearch.searchmodule;
+package com.amap.poisearch.searchmodule;
 
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.location.Location;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -11,7 +12,7 @@ import com.amap.api.services.core.PoiItem;
 import com.amap.poisearch.R;
 import com.amap.poisearch.searchmodule.PoiListAdapter.Callback;
 
- /**
+/**
  * Created by liangchao_suxun on 2017/4/26.
  */
 
@@ -47,7 +48,8 @@ public class PoiListWidget extends FrameLayout {
         mPoiListAdapter.setFavAddressVisible(isVisible);
         mPoiListAdapter.notifyDataSetChanged();
     }
-    private void init(){
+
+    private void init() {
         LayoutInflater.from(getContext()).inflate(R.layout.widget_poi_list, this);
         mPoiListView = (PoiListView)findViewById(R.id.poi_lv);
 
@@ -74,7 +76,7 @@ public class PoiListWidget extends FrameLayout {
         mPoiListAdapter.notifyDataSetChanged();
     }
 
-    public void onLoading(){
+    public void onLoading() {
         mPoiListAdapter.onLoading();
         mPoiListAdapter.notifyDataSetChanged();
     }
@@ -91,9 +93,14 @@ public class PoiListWidget extends FrameLayout {
         }
     };
 
+    public void setCurrLoc(Location currLoc) {
+        mPoiListAdapter.setCurrLoc(currLoc);
+        mPoiListAdapter.notifyDataSetChanged();
+    }
 
-    public static interface IParentWidget{
-        public void onFavAddressClick(int homeOrComp, int changeOrSel) ;
+    public static interface IParentWidget {
+        public void onFavAddressClick(int homeOrComp, int changeOrSel);
+
         public void onSelPoiItem(PoiItem poiItem);
     }
 

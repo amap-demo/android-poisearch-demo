@@ -1,6 +1,10 @@
- package com.amap.poisearch.searchmodule;
+package com.amap.poisearch.searchmodule;
 
+import java.text.DecimalFormat;
+
+import android.location.Location;
 import com.amap.api.services.core.PoiItem;
+import com.amap.poisearch.util.AMapUtil;
 
 /**
  * Created by liangchao_suxun on 2017/4/28.
@@ -12,6 +16,32 @@ public class PoiListItemData {
 
     int type;
     com.amap.api.services.core.PoiItem poiItem;
+
+    private DecimalFormat disFormat = new DecimalFormat("0.0km");
+
+    public String calDis(Location currLoc) {
+        if (currLoc == null) {
+            return "";
+        }
+
+        if (poiItem == null || poiItem.getLatLonPoint() == null) {
+            return null;
+        }
+
+        Location location = new Location(currLoc);
+        location.setLatitude(poiItem.getLatLonPoint().getLatitude());
+        location.setLongitude(poiItem.getLatLonPoint().getLongitude());
+
+        float distance = AMapUtil.calDistance(currLoc, location);
+
+        distance = distance / 1000;
+
+        if (distance < 0.1f) {
+            return null;
+        }
+
+        return disFormat.format(distance);
+    }
 
     public static int getHisData() {
         return HIS_DATA;

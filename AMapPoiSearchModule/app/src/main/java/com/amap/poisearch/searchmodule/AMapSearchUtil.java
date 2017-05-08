@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import com.amap.api.services.core.PoiItem;
+import com.amap.api.services.poisearch.PoiResult;
 import com.amap.api.services.poisearch.PoiSearch;
 import com.amap.api.services.poisearch.PoiSearch.OnPoiSearchListener;
 
@@ -14,16 +15,35 @@ import com.amap.api.services.poisearch.PoiSearch.OnPoiSearchListener;
 
 public class AMapSearchUtil {
 
-    public static void doPoiSearch(Context context, String searchId, String keyWord, String category, String adCode,
+    public static interface OnLatestPoiSearchListener {
+        void onPoiSearched(PoiResult var1, int var2 , long searchId);
+        void onPoiItemSearched(PoiItem var1, int var2, long searchId);
+    }
+
+
+    public static void doPoiSearch(Context context, final long searchId, String keyWord, String category, String adCode,
                                    int page,
                                    int pageSize,
-                                   OnPoiSearchListener onPoiSearchListener) {
+                                   final OnLatestPoiSearchListener onPoiSearchListener) {
+        if (onPoiSearchListener == null) {
+            return;
+        }
 
         PoiSearch.Query query = new PoiSearch.Query(keyWord, category, adCode);
         query.setPageSize(pageSize);
         query.setPageNum(page);
         PoiSearch poiSearch = new PoiSearch(context, query);
-        poiSearch.setOnPoiSearchListener(onPoiSearchListener);
+        poiSearch.setOnPoiSearchListener(new OnPoiSearchListener() {
+            @Override
+            public void onPoiSearched(PoiResult poiResult, int i) {
+                onPoiSearchListener.onPoiSearched(poiResult, i, searchId);
+            }
+
+            @Override
+            public void onPoiItemSearched(PoiItem poiItem, int i) {
+                onPoiSearchListener.onPoiItemSearched(poiItem, i, searchId);
+            }
+        });
         poiSearch.searchPOIAsyn();
     }
 

@@ -3,6 +3,7 @@ package com.amap.poisearch.searchmodule;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.location.Location;
 import android.view.View;
 import com.amap.api.services.core.PoiItem;
 import com.amap.poisearch.util.CityModel;
@@ -24,6 +25,9 @@ public interface ISearchModule {
 
         /** 设置所在城市的名字,默认为北京*/
         public void setCityName(String cityName);
+
+        /** 设置当前定位点*/
+        public void setCurrLoc(Location currLoc);
 
         /**
          * 设置收藏地址选择的view是否可见
@@ -64,6 +68,9 @@ public interface ISearchModule {
 
         /** 设置所在城市*/
         public void setCity(CityModel city);
+
+        /** 设置当前定位点*/
+        public void setCurrLoc(Location currLoc);
 
         /**
          * 设置收藏地址选择的view是否可见

@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
+import android.location.Location;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.poisearch.PoiResult;
 import com.amap.api.services.poisearch.PoiSearch.OnPoiSearchListener;
+import com.amap.poisearch.searchmodule.AMapSearchUtil.OnLatestPoiSearchListener;
 import  com.amap.poisearch.searchmodule.ISearchModule.IDelegate;
 import  com.amap.poisearch.searchmodule.ISearchModule.IWidget;
 import  com.amap.poisearch.util.CityModel;
@@ -102,6 +104,11 @@ public class SearchModuleDelegate implements IDelegate {
     }
 
     @Override
+    public void setCurrLoc(Location currLoc) {
+        mWidget.setCurrLoc(currLoc);
+    }
+
+    @Override
     public void setFavAddressVisible(boolean isVisible) {
         mWidget.setFavAddressVisible(isVisible);
     }
@@ -148,38 +155,35 @@ public class SearchModuleDelegate implements IDelegate {
         mWidget.reloadPoiList(poiItems);
     }
 
-    /**
-     * 防止连续频繁发起搜索请求
-     */
-    private AtomicBoolean isSearching = new AtomicBoolean(false);
-
+    private long mCurrSearchId = 0;
     @Override
     public void onSearch(String inputStr) {
-        if (isSearching.get()) {
-            return;
-        }
+        mCurrSearchId= java.lang.System.currentTimeMillis();
 
         if (TextUtils.isEmpty(inputStr)) {
+            // 显示收藏的位置的选择panel
+            setFavAddressVisible(true);
             reload(null, true);
-            isSearching.set(false);
             return;
         }
 
-        isSearching.set(true);
-
-        AMapSearchUtil.doPoiSearch(mContext, "" + java.lang.System.currentTimeMillis(), inputStr, mCategory,
-            mCurrCity.getAdcode(), 0, this.pageSize, new OnPoiSearchListener() {
+        AMapSearchUtil.doPoiSearch(mContext, mCurrSearchId, inputStr, mCategory,
+            mCurrCity.getAdcode(), 0, this.pageSize, new AMapSearchUtil.OnLatestPoiSearchListener() {
                 @Override
-                public void onPoiSearched(PoiResult poiResult, int i) {
+                public void onPoiSearched(PoiResult poiResult, int i, long searchId) {
+                    // 只取最新的结果
+                    if (searchId < mCurrSearchId) {
+                        return;
+                    }
+
+                    // 不显示收藏的位置的选择panel
+                    setFavAddressVisible(false);
                     ArrayList<PoiItem> items = poiResult.getPois();
                     reload(items, false);
-
-                    isSearching.set(false);
                 }
 
                 @Override
-                public void onPoiItemSearched(PoiItem poiItem, int i) {
-                    isSearching.set(false);
+                public void onPoiItemSearched(PoiItem poiItem, int i, long searchId) {
                 }
             });
 

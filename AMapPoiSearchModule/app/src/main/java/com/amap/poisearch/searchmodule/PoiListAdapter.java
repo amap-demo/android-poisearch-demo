@@ -3,6 +3,9 @@
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.location.Location;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -29,6 +32,8 @@ public class PoiListAdapter extends BaseAdapter {
     ArrayList<PoiListItemData> data;
 
     private int loadStatus;
+
+    private Location mCurrLoc;
 
     private boolean isFavViewVisible = true;
 
@@ -76,6 +81,14 @@ public class PoiListAdapter extends BaseAdapter {
 
     public void setFavAddressVisible(boolean isVisible) {
         isFavViewVisible = isVisible;
+    }
+
+    public void setCurrLoc(Location currLoc) {
+        if (currLoc == null) {
+            return;
+        }
+
+        this.mCurrLoc = currLoc;
     }
 
     @Override
@@ -156,6 +169,7 @@ public class PoiListAdapter extends BaseAdapter {
                     tag.iconIV = (ImageView)convertView.findViewById(R.id.icon_iv);
                     tag.titleTV = (TextView)convertView.findViewById(R.id.title_tv);
                     tag.subTitleTV = (TextView)convertView.findViewById(R.id.sub_title_tv);
+                    tag.disTV = (TextView)convertView.findViewById(R.id.dis_tv);
 
                     convertView.setTag(tag);
                     convertView.setOnClickListener(mItemClickListener);
@@ -189,10 +203,11 @@ public class PoiListAdapter extends BaseAdapter {
         return mLoadingView;
     }
 
-    private static class PoiItemWidgetTag{
+    private class PoiItemWidgetTag{
         public ImageView iconIV;
         public TextView titleTV;
         public TextView subTitleTV;
+        public TextView disTV;
 
         public PoiListItemData mPoiItem;
 
@@ -206,6 +221,22 @@ public class PoiListAdapter extends BaseAdapter {
                 iconIV.setImageResource(R.mipmap.time);
             } else {
                 iconIV.setImageResource(R.mipmap.poi);
+            }
+
+            if (mPoiItem.type != PoiListItemData.HIS_DATA) {
+                initDisTV(poiItem);
+            } else {
+                disTV.setVisibility(View.GONE);
+            }
+        }
+
+        private void initDisTV(PoiListItemData poiItem) {
+            String calDis = poiItem.calDis(mCurrLoc);
+            if (!TextUtils.isEmpty(calDis)) {
+                disTV.setText(calDis);
+                disTV.setVisibility(View.VISIBLE);
+            } else {
+                disTV.setVisibility(View.GONE);
             }
         }
     }

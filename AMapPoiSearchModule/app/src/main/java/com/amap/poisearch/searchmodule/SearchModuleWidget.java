@@ -3,6 +3,7 @@ package com.amap.poisearch.searchmodule;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.location.Location;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -56,12 +57,19 @@ class SearchModuleWidget extends RelativeLayout implements IWidget {
         this.mDelegate = delegate;
     }
 
+
     @Override
     public void setCityName(String cityName) {
         if (mPoiSearchWidget != null) {
             mPoiSearchWidget.setCityName(cityName);
         }
     }
+
+    @Override
+    public void setCurrLoc(Location currLoc) {
+        mPoiListWidget.setCurrLoc(currLoc);
+    }
+
 
     @Override
     public void setFavAddressVisible(boolean isVisible) {
