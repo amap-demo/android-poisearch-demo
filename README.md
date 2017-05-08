@@ -7,7 +7,7 @@ AMap 检索的逻辑模块。出行类app在进行目的地检索时可以直接
 - 阅读[参考手册](http://a.amap.com/lbs/static/unzip/Android_Map_Doc/index.html).
 - 工程基于高德地图Android地图SDK实现
 
-###配置搭建AndroidSDK工程###
+### 配置搭建AndroidSDK工程 ###
 - [Android Studio工程搭建方法](http://lbs.amap.com/api/android-sdk/guide/creat-project/android-studio-creat-project/#add-jars).
 - [通过maven库引入SDK方法](http://lbsbbs.amap.com/forum.php?mod=viewthread&tid=18786).
 
