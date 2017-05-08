@@ -11,16 +11,16 @@ AMap 检索的逻辑模块。出行类app在进行目的地检索时可以直接
 - [Android Studio工程搭建方法](http://lbs.amap.com/api/android-sdk/guide/creat-project/android-studio-creat-project/#add-jars).
 - [通过maven库引入SDK方法](http://lbsbbs.amap.com/forum.php?mod=viewthread&tid=18786).
 
-###使用场景###
+### 使用场景 ###
 AMapPoiSearchModule 提供了目的地检索的组件。
 
-###组件截图###
+### 组件截图 ###
 
 ![Screenshot](https://github.com/amap-demo/android-poisearch-demo/blob/master/search_ui_host.png)
 ![Screenshot](https://github.com/amap-demo/android-poisearch-demo/blob/master/search_ui_choose_city.png)
 
 
-###使用方法###
+### 使用方法 ###
 此处以MainActivity为例进行介绍：
 
 step1. 在onCreate中初始化Widget和ModuleDelegte<br />
