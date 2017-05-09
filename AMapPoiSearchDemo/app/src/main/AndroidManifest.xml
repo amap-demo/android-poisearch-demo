@@ -57,6 +57,9 @@
             android:windowSoftInputMode="adjustPan"
             >
         </activity>
+
+        <service android:name="com.amap.api.location.APSService"></service>
+
     </application>
 
 </manifest>
