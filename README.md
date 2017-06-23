@@ -15,10 +15,8 @@ AMap 检索的逻辑模块。出行类app在进行目的地检索时可以直接
 AMapPoiSearchModule 提供了目的地检索的组件。
 
 ### 组件截图 ###
-
-![Screenshot](https://github.com/amap-demo/android-poisearch-demo/blob/master/search_ui_host.png)
-![Screenshot](https://github.com/amap-demo/android-poisearch-demo/blob/master/search_ui_choose_city.png)
-
+<img src="https://github.com/amap-demo/android-poisearch-demo/blob/master/search_ui_host.png" width="50%" />
+<img src="https://github.com/amap-demo/android-poisearch-demo/blob/master/search_ui_choose_city.png" width="50%" />
 
 ### 使用方法 ###
 此处以MainActivity为例进行介绍：
