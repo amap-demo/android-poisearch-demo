@@ -1,6 +1,7 @@
 package com.amap.poisearch.searchmodule;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
@@ -8,16 +9,20 @@ import android.location.Location;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import com.amap.api.maps.model.LatLng;
 import com.amap.api.services.core.PoiItem;
+import com.amap.api.services.help.Inputtips.InputtipsListener;
+import com.amap.api.services.help.Tip;
 import com.amap.api.services.poisearch.PoiResult;
 import com.amap.api.services.poisearch.PoiSearch.OnPoiSearchListener;
 import com.amap.poisearch.searchmodule.AMapSearchUtil.OnLatestPoiSearchListener;
-import  com.amap.poisearch.searchmodule.ISearchModule.IDelegate;
-import  com.amap.poisearch.searchmodule.ISearchModule.IWidget;
-import  com.amap.poisearch.util.CityModel;
-import  com.amap.poisearch.util.CityUtil;
-import  com.amap.poisearch.util.FavAddressUtil;
-import  com.amap.poisearch.util.PoiItemDBHelper;
+import com.amap.poisearch.searchmodule.AMapSearchUtil.OnSugListener;
+import com.amap.poisearch.searchmodule.ISearchModule.IDelegate;
+import com.amap.poisearch.searchmodule.ISearchModule.IWidget;
+import com.amap.poisearch.util.CityModel;
+import com.amap.poisearch.util.CityUtil;
+import com.amap.poisearch.util.FavAddressUtil;
+import com.amap.poisearch.util.PoiItemDBHelper;
 
 /**
  * Created by liangchao_suxun on 2017/4/26.
@@ -37,15 +42,28 @@ public class SearchModuleDelegate implements IDelegate {
 
     private String mCategory = "";
 
-
     private PoiItem mFavHomePoi;
     private PoiItem mFavCompPoi;
 
     private IParentDelegate mParentDelegate;
 
+    int mPoiType = 0;
+
+    /** 中心地址，检索时会以此ll为中心 */
+    private LatLng mCenterLL;
+
+
     @Override
     public void bindParentDelegate(IParentDelegate delegate) {
         this.mParentDelegate = delegate;
+    }
+
+    @Override
+    public void setPoiType(int poiType) {
+        mPoiType = poiType;
+        if (mWidget != null) {
+            mWidget.setPoiType(poiType);
+        }
     }
 
     @Override
@@ -62,6 +80,8 @@ public class SearchModuleDelegate implements IDelegate {
 
         mWidget = new SearchModuleWidget(context);
         mWidget.bindDelegate(this);
+        mWidget.setPoiType(mPoiType);
+        mWidget.setCityName(mCurrCity.getCity());
 
         init(context);
 
@@ -99,8 +119,9 @@ public class SearchModuleDelegate implements IDelegate {
         }
 
         this.mCurrCity = city;
-        mWidget.setCityName(this.mCurrCity.getCity());
-
+        if (mWidget != null) {
+            mWidget.setCityName(this.mCurrCity.getCity());
+        }
     }
 
     @Override
@@ -134,14 +155,27 @@ public class SearchModuleDelegate implements IDelegate {
 
     private static final int POI_HIS_SIZE = 5;
 
-    private void reload(ArrayList<PoiItem> items , boolean hasHistory) {
+    private void reload(List<PoiItem> items, boolean hasHistory) {
         ArrayList<PoiListItemData> poiItems = new ArrayList<>();
-
         if (hasHistory) {
-            ArrayList<PoiItem> hisItems = PoiItemDBHelper.getInstance().getLatestPois(mContext, POI_HIS_SIZE);
+            ArrayList<PoiItem> hisItems = PoiItemDBHelper.getInstance().getLatestPois(mContext, POI_HIS_SIZE * 4);
             if (hisItems != null) {
                 for (PoiItem hisItem : hisItems) {
+
+                    if (hisItem == null || mCurrCity == null) {
+                        continue;
+                    }
+
+                    if (!CityUtil.isSameCity(hisItem.getAdCode(), mCurrCity.getAdcode())) {
+                        continue;
+                    }
+
                     poiItems.add(new PoiListItemData(PoiListItemData.HIS_DATA, hisItem));
+
+                    // 历史数据不超过POI_HIS_SIZE数量
+                    if (poiItems.size() >= POI_HIS_SIZE) {
+                        break;
+                    }
                 }
             }
         }
@@ -156,9 +190,10 @@ public class SearchModuleDelegate implements IDelegate {
     }
 
     private long mCurrSearchId = 0;
+
     @Override
     public void onSearch(String inputStr) {
-        mCurrSearchId= java.lang.System.currentTimeMillis();
+        mCurrSearchId = java.lang.System.currentTimeMillis();
 
         if (TextUtils.isEmpty(inputStr)) {
             // 显示收藏的位置的选择panel
@@ -167,26 +202,19 @@ public class SearchModuleDelegate implements IDelegate {
             return;
         }
 
-        AMapSearchUtil.doPoiSearch(mContext, mCurrSearchId, inputStr, mCategory,
-            mCurrCity.getAdcode(), 0, this.pageSize, new AMapSearchUtil.OnLatestPoiSearchListener() {
-                @Override
-                public void onPoiSearched(PoiResult poiResult, int i, long searchId) {
-                    // 只取最新的结果
-                    if (searchId < mCurrSearchId) {
-                        return;
-                    }
-
-                    // 不显示收藏的位置的选择panel
-                    setFavAddressVisible(false);
-                    ArrayList<PoiItem> items = poiResult.getPois();
-                    reload(items, false);
+        AMapSearchUtil.doSug(mContext, mCurrSearchId, inputStr, mCurrCity.getAdcode(), mCenterLL, new OnSugListener() {
+            @Override
+            public void onSug(List<PoiItem> list, int i, long searchId) {
+                // 只取最新的结果
+                if (searchId < mCurrSearchId) {
+                    return;
                 }
 
-                @Override
-                public void onPoiItemSearched(PoiItem poiItem, int i, long searchId) {
-                }
-            });
-
+                // 不显示收藏的位置的选择panel
+                setFavAddressVisible(false);
+                reload(list, false);
+            }
+        });
     }
 
     @Override

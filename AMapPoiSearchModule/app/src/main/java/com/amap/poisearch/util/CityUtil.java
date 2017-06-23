@@ -1,15 +1,26 @@
 package com.amap.poisearch.util;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.Log;
 import com.amap.api.maps.offlinemap.OfflineMapCity;
 import com.amap.api.maps.offlinemap.OfflineMapManager;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import org.json.JSONArray;
 
 /**
  * Created by liangchao_suxun on 2017/4/27.
@@ -59,9 +70,28 @@ public class CityUtil {
         return getCityList(context, null);
     }
 
+    public static CityModel getCityByCode(Context context, String adCode) {
+        ArrayList<CityModel> cityList = getCityList(context);
+        if (cityList == null) {
+            return null;
+        }
+
+        for (CityModel cityItem : cityList) {
+            if (cityItem.getCode().equals(adCode)) {
+                return cityItem;
+            }
+        }
+
+        return null;
+    }
+
     public static ArrayList<CityModel> getCityList(Context context, String filterStr) {
         ArrayList<CityModel> cities;
-        cities = getCitiesFromOfflineCities(context);
+        cities = getCitiesFromAssets(context);
+
+        if (TextUtils.isEmpty(filterStr)) {
+            return cities;
+        }
 
         ArrayList<CityModel> res = new ArrayList<>();
         for (CityModel item : cities) {
@@ -141,24 +171,51 @@ public class CityUtil {
         return res;
     }
 
-    private static ArrayList<CityModel> offlieCityCache = new ArrayList<>();
+    private static ArrayList<CityModel> cityListCache = new ArrayList<>();
 
-    private static ArrayList<CityModel> getCitiesFromOfflineCities(Context context) {
-
-        if (offlieCityCache != null && offlieCityCache.size() > 0) {
-            return offlieCityCache;
+    /**
+     * 通过assets读取citylist
+     * @param context
+     * @return
+     */
+    private static ArrayList<CityModel> getCitiesFromAssets(Context context) {
+        if (cityListCache != null && cityListCache.size() > 0) {
+            return cityListCache;
         }
 
-        ArrayList<CityModel> res = new ArrayList<>();
-        OfflineMapManager mapManager = new OfflineMapManager(context, null);
-        ArrayList<OfflineMapCity> cities = mapManager.getOfflineMapCityList();
+        ArrayList<CityModel> cityList = null;
 
-        for (OfflineMapCity offlineMapCity : cities) {
-            res.add(new CityModel(offlineMapCity));
+        try {
+            InputStream cityListInputStream = context.getResources().getAssets().open("city_list.data");
+            InputStreamReader inputReader = new InputStreamReader(cityListInputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputReader);
+            String cityJson = new String();
+
+            String res = "";
+            while ((res = bufferedReader.readLine()) != null) {
+                cityJson = cityJson + res;
+            }
+            Gson gson = new Gson();
+            cityList = gson.fromJson(cityJson, new TypeToken<List<CityModel>>() {}.getType());
+
+            cityListCache = cityList;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        offlieCityCache = res;
+        return cityList;
+    }
 
-        return res;
+    private static final int ADCODE_LENGTH = 6;
+    private static final int ADCODE_MEAN_LENGTH = 2;
+    public static boolean isSameCity(String adCode, String cityCode2) {
+        if (adCode == null || cityCode2 == null) {
+            return false;
+        }
+
+        if (adCode.length() != ADCODE_LENGTH && cityCode2.length() != ADCODE_LENGTH) {
+            return false;
+        }
+        return adCode.substring(0, ADCODE_MEAN_LENGTH).equals(cityCode2.substring(0, ADCODE_MEAN_LENGTH));
     }
 }

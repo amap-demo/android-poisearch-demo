@@ -1,17 +1,12 @@
 package com.amap.poisearchdemo;
 
 import android.content.Intent;
-import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationListener;
-import com.amap.api.maps.AMap;
-import com.amap.api.maps.AMap.OnMyLocationChangeListener;
-import com.amap.api.maps.model.MyLocationStyle;
 import com.amap.api.services.core.PoiItem;
 import com.amap.poisearch.searchmodule.ISearchModule.IDelegate.IParentDelegate;
 import com.amap.poisearch.searchmodule.SearchModuleDelegate;

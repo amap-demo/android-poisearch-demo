@@ -3,6 +3,7 @@ package com.amap.poisearch.searchmodule;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.view.View;
 import com.amap.api.services.core.PoiItem;
@@ -22,6 +23,13 @@ public interface ISearchModule {
          * @param delegate
          */
         public void bindDelegate(IDelegate delegate);
+
+        /**
+         * 设置poitype的类型。0表示为起始点，1表示目的点
+         * @param poiType
+         */
+        public void setPoiType(int poiType);
+
 
         /** 设置所在城市的名字,默认为北京*/
         public void setCityName(String cityName);
@@ -57,11 +65,20 @@ public interface ISearchModule {
 
     public static interface IDelegate {
 
+        public static final int START_POI_TYPE = 0;
+        public static final int DEST_POI_TYPE = 1;
+
         /**
          * 绑定父控制类。不能处理的逻辑交由父控制类处理
          * @param delegate
          */
         public void bindParentDelegate(IParentDelegate delegate);
+
+        /**
+         * 设置poitype的类型。0表示为起始点，1表示目的点
+         * @param poiType
+         */
+        public void setPoiType(int poiType);
 
         /** 获得显示的view*/
         public View getWidget(Context context);

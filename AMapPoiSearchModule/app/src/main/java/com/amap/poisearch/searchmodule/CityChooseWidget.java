@@ -3,7 +3,6 @@ package com.amap.poisearch.searchmodule;
 import java.util.ArrayList;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.RelativeLayout;
@@ -37,9 +36,6 @@ public class CityChooseWidget extends RelativeLayout implements ICityChooseModul
     }
 
     private void init(){
-        int padding = (int)getContext().getResources().getDimension(R.dimen.padding);
-        setPadding(padding, 0, padding, 0);
-
         LayoutInflater.from(getContext()).inflate(R.layout.widget_city_choose, this);
 
         mCurrCityWidget = (CurrCityWidget)findViewById(R.id.curr_city_widget);

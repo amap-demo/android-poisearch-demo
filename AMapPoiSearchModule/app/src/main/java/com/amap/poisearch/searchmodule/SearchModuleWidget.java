@@ -57,6 +57,10 @@ class SearchModuleWidget extends RelativeLayout implements IWidget {
         this.mDelegate = delegate;
     }
 
+    @Override
+    public void setPoiType(int poiType) {
+        mPoiSearchWidget.setPoiType(poiType);
+    }
 
     @Override
     public void setCityName(String cityName) {

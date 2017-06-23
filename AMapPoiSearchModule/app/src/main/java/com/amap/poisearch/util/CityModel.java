@@ -1,17 +1,21 @@
 package com.amap.poisearch.util;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import com.amap.api.maps.offlinemap.OfflineMapCity;
 
 /**
  * Created by liangchao_suxun on 2017/4/27.
  */
 
-public class CityModel {
+public class CityModel implements Parcelable{
     private String adcode;
     private String city;
     private String code;
     private String jianpin;
     private String pinyin;
+    private double lat;
+    private double lng;
 
     public CityModel() {
         ;
@@ -81,6 +85,65 @@ public class CityModel {
 
     public void setPinyin(String pinyin) {
         this.pinyin = pinyin;
+    }
+
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public void setLng(double lng) {
+        this.lng = lng;
+    }
+
+    public double getLat() {
+        return lat;
+    }
+
+    public double getLng() {
+        return lng;
+    }
+
+
+    public static final Creator<CityModel> CREATOR = new Creator() {
+        @Override
+        public Object createFromParcel(Parcel source) {
+            return new CityModel(source);
+        }
+
+        @Override
+        public Object[] newArray(int size) {
+            return new Object[0];
+        }
+    };
+
+    public static Creator<CityModel> getCreator() {
+        return CREATOR;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(adcode);
+        dest.writeString(city);
+        dest.writeString(code);
+        dest.writeString(jianpin);
+        dest.writeString(pinyin);
+        dest.writeDouble(lat);
+        dest.writeDouble(lng);
+    }
+
+    protected CityModel(Parcel parcel) {
+        adcode = parcel.readString();
+        city = parcel.readString();
+        code = parcel.readString();
+        jianpin = parcel.readString();
+        pinyin = parcel.readString();
+        lat = parcel.readDouble();
+        lng = parcel.readDouble();
     }
 }
 

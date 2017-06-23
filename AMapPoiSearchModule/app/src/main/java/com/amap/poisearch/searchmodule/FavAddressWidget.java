@@ -51,6 +51,15 @@ public class FavAddressWidget extends RelativeLayout implements View.OnClickList
         mComp.setSubTitle(null);
     }
 
+    public void setVisible(boolean isVisible) {
+        View subView = getChildAt(0);
+        if (isVisible) {
+            subView.setVisibility(View.VISIBLE);
+        } else {
+            subView.setVisibility(View.GONE);
+        }
+    }
+
     public void setHomeAddr(String addr) {
         if (TextUtils.isEmpty(addr)) {
             return;

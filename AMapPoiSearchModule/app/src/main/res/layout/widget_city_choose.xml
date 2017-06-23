@@ -4,6 +4,8 @@
         android:id="@+id/city_input_widget"
         android:layout_alignParentTop="true"
         android:layout_width="fill_parent"
+        android:paddingLeft="@dimen/padding"
+        android:paddingRight="@dimen/padding"
         android:layout_height="45dp">
         >
 
@@ -13,12 +15,16 @@
         android:id="@+id/curr_city_widget"
         android:layout_marginTop="@dimen/padding"
         android:layout_below="@id/city_input_widget"
+        android:layout_marginLeft="@dimen/padding"
+        android:layout_marginRight="@dimen/padding"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
     </com.amap.poisearch.searchmodule.CurrCityWidget>
 
     <com.amap.poisearch.searchmodule.CityListWidget
         android:id="@+id/city_list"
+        android:layout_marginLeft="@dimen/padding"
+        android:layout_marginRight="@dimen/padding"
         android:layout_below="@id/curr_city_widget"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">

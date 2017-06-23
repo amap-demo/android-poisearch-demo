@@ -141,14 +141,11 @@ public class PoiListAdapter extends BaseAdapter {
 
         if (loadStatus == LOAD_STATUS_FINISHED) {
             if (getItemViewType(position) == 1) {
-
-                if (!isFavViewVisible) {
-                    return new View(context);
-                }
-
-                if (convertView == null) {
+                if (convertView == null || !(convertView instanceof FavAddressWidget)) {
                     convertView = new FavAddressWidget(context);
                 }
+
+                ((FavAddressWidget)convertView).setVisible(isFavViewVisible);
 
                 ((FavAddressWidget)convertView).setHomeAddr(homeAddr);
                 ((FavAddressWidget)convertView).setCompAddr(compAddr);
