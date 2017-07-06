@@ -29,16 +29,18 @@ import com.amap.api.services.poisearch.PoiSearch.OnPoiSearchListener;
 public class AMapSearchUtil {
 
     public static interface OnLatestPoiSearchListener {
-        void onPoiSearched(PoiResult var1, int var2 , long searchId);
+        void onPoiSearched(PoiResult var1, int var2, long searchId);
+
         void onPoiItemSearched(PoiItem var1, int var2, long searchId);
     }
 
-    public static interface OnSugListener{
+    public static interface OnSugListener {
         void onSug(List<PoiItem> tips, int i, long searchId);
     }
 
     /**
      * 进行poi检索
+     *
      * @param context
      * @param searchId
      * @param keyWord
@@ -83,7 +85,8 @@ public class AMapSearchUtil {
      * @param cityCode
      * @param inputtipsListener
      */
-    public static void doSug(Context context, final long searchId, String keyword, String cityCode, LatLng centerLL,
+    public static void doSug(final Context context, final long searchId, final String keyword, final String cityCode,
+                             LatLng centerLL,
                              final OnSugListener inputtipsListener) {
 
         InputtipsQuery inputquery = new InputtipsQuery(keyword, cityCode);
@@ -105,12 +108,39 @@ public class AMapSearchUtil {
                         continue;
                     }
 
+                    //如果经纬度不存在，则忽略
+                    if (tip.getPoint().getLatitude() <= 0 || tip.getPoint().getLongitude() <= 0) {
+                        continue;
+                    }
+
                     PoiItem poiItem = new PoiItem(tip.getPoiID(), tip.getPoint(), tip.getName(), tip.getAddress());
                     poiItem.setAdCode(tip.getAdcode());
                     poiItem.setTypeCode(tip.getTypeCode());
                     pois.add(poiItem);
                 }
-                inputtipsListener.onSug(pois, i, searchId);
+
+                if (pois.size() > 0) {
+                    inputtipsListener.onSug(pois, i, searchId);
+                } else {
+                    //如果tip返回的结果为空，则进行poi检索
+                    doPoiSearch(context, searchId, keyword, "", cityCode, 0, 10, new OnLatestPoiSearchListener() {
+                        @Override
+                        public void onPoiSearched(PoiResult var1, int var2, long searchId) {
+                            if (var1 == null || var1.getPois() == null) {
+                                inputtipsListener.onSug(new ArrayList<PoiItem>(), -1, searchId);
+                                return;
+                            }
+                            ArrayList<PoiItem> items = var1.getPois();
+                            inputtipsListener.onSug(items, var2, searchId);
+                        }
+
+                        @Override
+                        public void onPoiItemSearched(PoiItem var1, int var2, long searchId) {
+
+                        }
+                    });
+                }
+
             }
         });
         inputTips.requestInputtipsAsyn();
@@ -118,6 +148,7 @@ public class AMapSearchUtil {
 
     /**
      * 进行反geo检索
+     *
      * @param context
      * @param lat
      * @param lng
@@ -135,7 +166,7 @@ public class AMapSearchUtil {
                     int minDis = 5000;
                     com.amap.api.services.core.PoiItem poiItem = regeocodeResult.getRegeocodeAddress().getPois().get(0);
 
-                    for(int ind=0; ind<regeocodeResult.getRegeocodeAddress().getPois().size();ind++) {
+                    for (int ind = 0; ind < regeocodeResult.getRegeocodeAddress().getPois().size(); ind++) {
                         PoiItem item = regeocodeResult.getRegeocodeAddress().getPois().get(ind);
                         if (item.getDistance() < minDis) {
                             minDis = item.getDistance();
