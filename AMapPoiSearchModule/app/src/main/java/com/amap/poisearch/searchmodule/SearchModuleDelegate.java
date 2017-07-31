@@ -78,21 +78,24 @@ public class SearchModuleDelegate implements IDelegate {
             return (View)mWidget;
         }
 
+
+
         mWidget = new SearchModuleWidget(context);
         mWidget.bindDelegate(this);
         mWidget.setPoiType(mPoiType);
-        mWidget.setCityName(mCurrCity.getCity());
 
+        // 获得context时，对mCurrCity进行检测，如果还没有初始化，则默认为默认值
+        if (this.mCurrCity == null) {
+            setCity(CityUtil.getDefCityModel(context));
+        }
+
+        mWidget.setCityName(mCurrCity.getCity());
         init(context);
 
         return (View)mWidget;
     }
 
     public void init(Context context) {
-        // 获得context时，对mCurrCity进行检测，如果还没有初始化，则默认为默认值
-        if (this.mCurrCity == null) {
-            setCity(CityUtil.getDefCityModel(context));
-        }
 
         mFavHomePoi = FavAddressUtil.getFavHomePoi(context);
         mFavCompPoi = FavAddressUtil.getFavCompPoi(context);
