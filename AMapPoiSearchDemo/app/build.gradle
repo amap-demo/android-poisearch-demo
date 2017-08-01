@@ -48,13 +48,11 @@ dependencies {
 
     compile 'com.google.code.gson:gson:2.8.0'
 
-    compile project(":AmapPoiSearchModule")
+    compile 'com.amap.api:poisearchmodule:1.0.0'
 
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
+//    compile the project if you'd like to DIV
+//    compile project(":AmapPoiSearchModule")
+
     compile 'com.android.support:appcompat-v7:25.1.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
-    testCompile 'junit:junit:4.12'
-
 }
