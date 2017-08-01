@@ -49,6 +49,9 @@ public class PoiItemDBHelper {
     }
 
     public ArrayList<PoiItem> getLatestPois(Context context, int pageSize) {
+        if (context == null) {
+            return null;
+        }
 
         String sqlStr = "select distinct(poiitem) , ctime from " + POI_TABLE_NAME + " order by ctime desc limit " + pageSize;
 

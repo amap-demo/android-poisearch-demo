@@ -118,9 +118,8 @@ public class SearchModuleDelegate implements IDelegate {
         this.mCurrCity = city;
         if (mWidget != null) {
             mWidget.setCityName(this.mCurrCity.getCity());
+            reload(null, true);
         }
-
-        reload(null, true);
     }
 
     @Override
