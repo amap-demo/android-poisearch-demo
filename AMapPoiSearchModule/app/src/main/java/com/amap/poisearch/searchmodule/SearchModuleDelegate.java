@@ -2,20 +2,13 @@ package com.amap.poisearch.searchmodule;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
 import android.location.Location;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.services.core.PoiItem;
-import com.amap.api.services.help.Inputtips.InputtipsListener;
-import com.amap.api.services.help.Tip;
-import com.amap.api.services.poisearch.PoiResult;
-import com.amap.api.services.poisearch.PoiSearch.OnPoiSearchListener;
-import com.amap.poisearch.searchmodule.AMapSearchUtil.OnLatestPoiSearchListener;
 import com.amap.poisearch.searchmodule.AMapSearchUtil.OnSugListener;
 import com.amap.poisearch.searchmodule.ISearchModule.IDelegate;
 import com.amap.poisearch.searchmodule.ISearchModule.IWidget;
@@ -86,10 +79,11 @@ public class SearchModuleDelegate implements IDelegate {
 
         // 获得context时，对mCurrCity进行检测，如果还没有初始化，则默认为默认值
         if (this.mCurrCity == null) {
-            setCity(CityUtil.getDefCityModel(context));
+            this.mCurrCity = CityUtil.getDefCityModel(context);
         }
 
         mWidget.setCityName(mCurrCity.getCity());
+
         init(context);
 
         return (View)mWidget;
@@ -125,6 +119,8 @@ public class SearchModuleDelegate implements IDelegate {
         if (mWidget != null) {
             mWidget.setCityName(this.mCurrCity.getCity());
         }
+
+        reload(null, true);
     }
 
     @Override
