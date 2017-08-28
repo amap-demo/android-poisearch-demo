@@ -107,7 +107,7 @@ public class AMapSearchUtil {
 
                 for (int ind = 0; list != null && ind < list.size(); ind++) {
                     Tip tip = list.get(ind);
-                    if (tip == null) {
+                    if (tip == null || tip.getPoint() == null) {
                         continue;
                     }
 
